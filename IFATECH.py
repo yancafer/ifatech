@@ -531,6 +531,7 @@ class JanelaRegistros:
         else:
             messagebox.showinfo("Excluir Todos os Registros", "A operação foi cancelada")
 
+
     def centralizar_janela(self, window):
         window.update_idletasks()
         largura = window.winfo_width()
@@ -871,11 +872,11 @@ class MainWindow:
 
                 if codigo == codigo_aluno:
                     encontrado = True
+                    aluno = linha
+                    nome_aluno = aluno.split(",")[0].strip()  # Get the student's name
                     if self.verificar_ficha_usada(codigo):
-                        messagebox.showerror("Verificar QR Code", "Código já verificado hoje.")
+                        messagebox.showerror("Verificar QR Code", f"Aluno(a) {nome_aluno} já recebeu o lanche hoje.")
                         return
-                    else:
-                        aluno = linha
                     break
 
         if encontrado:
@@ -885,9 +886,9 @@ class MainWindow:
             if aluno is not None:  # Verifica se aluno não é None
                 if self.dentro_do_periodo():
                     self.registrar_ficha_usada(aluno, codigo, data_atual, hora_atual)
-                    messagebox.showinfo("Verificar QR Code", "Aluno apto a receber.")
+                    messagebox.showinfo("Verificar QR Code", f"Aluno(a) {nome_aluno} apto a receber o lanche.")
                 else:
-                    messagebox.showerror("Verificar QR Code", "O aluno não pode receber a ficha no momento.")
+                    messagebox.showerror("Verificar QR Code", f"Aluno(a) {nome_aluno} não pode receber a ficha no momento.")
             elif not self.verificar_ficha_usada(codigo):
                 messagebox.showerror("Verificar QR Code", "Erro ao obter informações do aluno.")
         else:
