@@ -10,6 +10,7 @@ class TelaCadastro:
     def __init__(self, main_window):
         self.main_window = main_window
         self.janela = tk.Toplevel(self.main_window.janela)
+        self.janela.iconbitmap('icones/IFATECHICO.ico')
         self.janela.title("Cadastro de aluno")
         self.janela.geometry("1300x600")
         self.centralizar_janela(self.janela)
@@ -318,6 +319,7 @@ class JanelaOpcoes:
     def __init__(self, janela_principal, main_window, alunos):
         self.janela_principal = janela_principal
         self.main_window = main_window
+        self.janela.iconbitmap('icones/IFATECHICO.ico')
         self.alunos = alunos
         self.janela = tk.Toplevel(self.janela_principal)
         self.janela.title("Opções")
@@ -448,6 +450,7 @@ class JanelaRegistros:
         self.janela_principal = janela_principal
         self.main_window = main_window
         self.janela = tk.Toplevel(self.janela_principal)
+        self.janela.iconbitmap('icones/IFATECHICO.ico')
         self.janela.title("Registros")
         self.janela.geometry("1300x600")
         self.centralizar_janela(self.janela)
@@ -616,6 +619,7 @@ class TelaCadastroPlanilha:
     def __init__(self, main_window):
         self.main_window = main_window
         self.janela = tk.Toplevel(self.main_window.janela)
+        self.janela.iconbitmap('icones/IFATECHICO.ico')
         self.janela.title("Cadastro de Alunos por Planilha")
         self.janela.geometry("1300x600")
         self.centralizar_janela(self.janela)
@@ -695,6 +699,7 @@ class TelaCadastroPlanilha:
 class MainWindow:
     def __init__(self):
         self.janela = tk.Tk()
+        self.janela.iconbitmap('icones/IFATECHICO.ico')
         self.janela.title("Ifatech")
         self.janela.geometry("800x400")
         self.centralizar_janela(self.janela)
