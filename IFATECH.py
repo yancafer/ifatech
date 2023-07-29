@@ -704,6 +704,22 @@ class MainWindow:
         )
         self.button_registros.pack(pady=10)
         self.janela.mainloop()
+    
+    def dentro_do_periodo(self):
+        agora = datetime.datetime.now()
+        dia_semana = agora.weekday()
+
+        hora_atual = agora.hour + agora.minute / 60
+
+        if 0 <= dia_semana <= 2:  # Segunda, terça e quarta-feira
+            if 7 <= hora_atual < 12 or 12 <= hora_atual < 17:
+                return True
+        elif 3 <= dia_semana <= 6:  # Quinta, sexta, sábado e domingo
+            if 8 <= hora_atual < 17:
+                return True
+
+        return False
+
 
     def centralizar_janela(self, window):
         window.update_idletasks()
@@ -829,25 +845,47 @@ class MainWindow:
             hora_atual = datetime.datetime.now().strftime("%H:%M:%S")
 
             if aluno is not None:  # Verifica se aluno não é None
-                self.registrar_ficha_usada(aluno, codigo, data_atual, hora_atual)
-                messagebox.showinfo("Verificar QR Code", "Aluno apto a receber.")
+                if self.dentro_do_periodo():
+                    self.registrar_ficha_usada(aluno, codigo, data_atual, hora_atual)
+                    messagebox.showinfo("Verificar QR Code", "Aluno apto a receber.")
+                else:
+                    messagebox.showerror("Verificar QR Code", "O aluno não pode receber a ficha no momento.")
             elif not self.verificar_ficha_usada(codigo):
                 messagebox.showerror("Verificar QR Code", "Erro ao obter informações do aluno.")
         else:
             messagebox.showerror("Verificar QR Code", "Código inválido. Por favor, verifique o código digitado.")
 
-
     def verificar_ficha_usada(self, codigo):
-        data_atual = datetime.date.today().strftime("%Y-%m-%d")
+        data_atual = datetime.date.today()
+        dia_semana = data_atual.weekday()  # 0 é segunda-feira, 6 é domingo
+        data_atual_str = data_atual.strftime("%Y-%m-%d")
+        hora_atual = datetime.datetime.now().strftime("%H:%M:%S")
         with open("fichas_usadas.txt", "r") as arquivo:
             for linha in arquivo:
                 dados = linha.strip().split(",")
+                if len(dados) < 4:  # Verificar se a linha tem o número esperado de elementos
+                    continue
                 codigo_ficha = dados[1]
                 data_registro_ficha = dados[2]
-                if codigo == codigo_ficha and data_atual == data_registro_ficha:
-                    return True
+                hora_registro_ficha = dados[3]
+                if codigo == codigo_ficha and data_atual_str == data_registro_ficha:
+                    if self.dentro_do_periodo():
+                        hora_registro = datetime.datetime.strptime(hora_registro_ficha, "%H:%M:%S").time()
+                        hora_agora = datetime.datetime.strptime(hora_atual, "%H:%M:%S").time()
+                        # Se for segunda-feira (0), terça-feira (1) ou quarta-feira (2)
+                        if dia_semana <= 2:
+                            periodo_manha = datetime.time(7, 0) <= hora_registro < datetime.time(12, 0)
+                            periodo_tarde = datetime.time(12, 0) <= hora_registro < datetime.time(17, 0)
+                            # Verificar se o registro anterior foi feito no mesmo período do dia
+                            if (periodo_manha and datetime.time(7, 0) <= hora_agora < datetime.time(12, 0)) or \
+                                    (periodo_tarde and datetime.time(12, 0) <= hora_agora < datetime.time(17, 0)):
+                                return True
+                        else:  # Se for quinta-feira (3), sexta-feira (4), sábado (5) ou domingo (6)
+                            periodo_dia = datetime.time(8, 0) <= hora_registro < datetime.time(17, 0)
+                            # Verificar se o registro anterior foi feito no mesmo período do dia
+                            if periodo_dia and datetime.time(8, 0) <= hora_agora < datetime.time(17, 0):
+                                return True
         return False
-
 
     def registrar_ficha_usada(self, aluno, codigo, data, hora):
         if aluno is not None:  # Verifica se aluno não é None
