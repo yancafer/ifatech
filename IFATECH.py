@@ -480,6 +480,17 @@ class JanelaRegistros:
             width=20,
             height=2,
         )
+        self.button_excluir_todos = tk.Button(
+            self.janela,
+            text="Excluir Todos os Registros",
+            command=self.excluir_todos_os_registros,
+            font=("Arial", 13),
+            wraplength=150,
+            width=20,
+            height=2,
+        )
+        self.button_excluir_todos.pack(side="bottom", pady=10)
+
         self.button_excluir.pack(side="bottom", pady=10)
         self.button_voltar = tk.Button(
             self.janela,
@@ -492,6 +503,33 @@ class JanelaRegistros:
         )
         self.button_voltar.pack(side="bottom", pady=10)
         self.preencher_treeview()
+        
+    def excluir_todos_os_registros(self):
+        resposta = messagebox.askyesno(
+            "Excluir Todos os Registros",
+            "Tem certeza de que deseja excluir todos os registros de alunos?",
+        )
+        if resposta:
+            # Excluir todos os registros do arquivo "registros.txt"
+            with open("registros.txt", "w") as arquivo:
+                arquivo.write("")
+            
+            # Excluir todas as fichas usadas
+            with open("fichas_usadas.txt", "w") as arquivo:
+                arquivo.write("")
+
+            # Excluir todos os QR codes
+            pasta_qr_codes = os.path.join(os.getcwd(), "qr_codes")
+            if os.path.exists(pasta_qr_codes):
+                for filename in os.listdir(pasta_qr_codes):
+                    os.remove(os.path.join(pasta_qr_codes, filename))
+
+            # Atualizar a exibição na lista
+            self.atualizar_treeview()
+            
+            messagebox.showinfo("Excluir Todos os Registros", "Todos os registros foram excluídos com sucesso!")
+        else:
+            messagebox.showinfo("Excluir Todos os Registros", "A operação foi cancelada")
 
     def centralizar_janela(self, window):
         window.update_idletasks()
